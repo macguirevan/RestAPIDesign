@@ -1,0 +1,207 @@
+info:
+  theater_name: Example Cinema
+  location: 123 Main Street, Anytown, USA
+  contact_number: +1 (555) 123-4567
+  website: www.examplecinema.com
+  email: info@examplecinema.com
+
+order_process:
+  - step: SelectMovie
+    description: Customer selects a movie to watch.
+    action_required: true
+	request: 
+      method: GET
+      endpoint: /movies/{movie_id}
+      summary: Get information about a selected movie.
+      parameters:
+        - name: movie_id
+          in: path
+          description: ID of the selected movie.
+          required: true
+          type: integer
+          format: int64
+      responses:
+        - status: 200 OK
+          description: Movie information retrieved successfully.
+          content_type: application/json
+          example: |
+            {
+              "title": "Example Movie",
+              "genre": "Action",
+              "duration": 120,
+              "rating": "PG-13"
+            }
+        - status: 404 Not Found
+          description: Movie not found.
+          content_type: application/json
+          example: |
+            {
+              "error": "Movie not found."
+			}
+	request: 
+      method: DELETE
+      endpoint: /selected_movie
+      summary: Clear selected movie choice.
+      responses:
+        - status: 200 OK
+          description: Selected movie cleared successfully.
+          content_type: application/json
+          example: |
+            {
+              "message": "Selected movie cleared."
+            }
+        - status: 404 Not Found
+          description: No movie selected to clear.
+          content_type: application/json
+          example: |
+            {
+              "error": "No movie selected."
+            }
+
+  - step: SelectDate
+    description: Customer chooses a date for the movie.
+    action_required: true
+	request: 
+      method: GET
+      endpoint: /available_dates
+      summary: Get available dates for the selected movie.
+      responses:
+        - status: 200 OK
+          description: Available dates retrieved successfully.
+          content_type: application/json
+          example: |
+            {
+              "dates": ["2023-10-10", "2023-10-11", "2023-10-12"]
+            }
+        - status: 404 Not Found
+          description: No available dates found for the selected movie.
+          content_type: application/json
+          example: |
+            {
+              "error": "No available dates found."
+            }
+	request: 
+      method: DELETE
+      endpoint: /selected_date
+      summary: Clear selected date choice.
+      responses:
+        - status: 200 OK
+          description: Selected date cleared successfully.
+          content_type: application/json
+          example: |
+            {
+              "message": "Selected date cleared."
+            }
+        - status: 404 Not Found
+          description: No date selected to clear.
+          content_type: application/json
+          example: |
+            {
+              "error": "No date selected."
+            }
+
+  - step: SelectTime
+    description: Customer selects a showtime for the movie.
+    action_required: true
+
+  - step: SelectSeats
+    description: Customer picks their preferred seats.
+    action_required: true
+	request: 
+      method: POST
+      endpoint: /select_seats
+      summary: Select preferred seats for the movie.
+      requestBody:
+        content_type: application/json
+        schema: 
+          type: object
+          properties:
+            movie_id:
+              type: integer
+            date:
+              type: string
+              format: date
+            time:
+              type: string
+              format: time
+            selected_seats:
+              type: array
+              items: string
+      responses:
+        - status: 200 OK
+          description: Seats selected successfully.
+          content_type: application/json
+          example: |
+            {
+              "selected_seats": ["A1", "A2", "B1"]
+            }
+        - status: 400 Bad Request
+          description: Invalid request. Please check the provided data.
+          content_type: application/json
+          example: |
+            {
+              "error": "Invalid request."
+            }
+	request: 
+      method: DELETE
+      endpoint: /selected_seats
+      summary: Clear selected seats choice.
+      responses:
+        - status: 200 OK
+          description: Selected seats cleared successfully.
+          content_type: application/json
+          example: |
+            {
+              "message": "Selected seats cleared."
+            }
+        - status: 404 Not Found
+          description: No seats selected to clear.
+          content_type: application/json
+          example: |
+            {
+              "error": "No seats selected."
+            }
+
+  - step: ConfirmTickets
+    description: Customer confirms the selected movie and seats.
+    action_required: true
+	request: 
+      method: POST
+      endpoint: /confirm_tickets
+      summary: Confirm selected tickets and submit booking information.
+      requestBody:
+        content_type: application/json
+        schema: 
+          type: object
+          properties:
+            movie_id:
+              type: integer
+            date:
+              type: string
+              format: date
+            time:
+              type: string
+              format: time
+            seats:
+              type: array
+              items: string
+      responses:
+        - status: 201 Created
+          description: Tickets confirmed and booking created successfully.
+          content_type: application/json
+          example: |
+            {
+              "booking_id": 12345,
+              "total_amount": 50.00
+            }
+        - status: 400 Bad Request
+          description: Invalid request. Please check the provided data.
+          content_type: application/json
+          example: |
+            {
+              "error": "Invalid request."
+            }
+
+  - step: EnterInfo
+    description: Customer enters personal information for booking.
+    action_required: true
